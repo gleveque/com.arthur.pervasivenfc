@@ -4,6 +4,9 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
 import com.arthur.pervasivenfc.R;
+import com.arthur.pervasivenfc.ArcMenu;
+import com.arthur.pervasivenfc.MainActivity;
+import com.arthur.pervasivenfc.RayMenu;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -19,14 +22,21 @@ import android.nfc.Tag;
 import android.nfc.tech.Ndef;
 import android.os.Bundle;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 @SuppressWarnings("unused")
 @SuppressLint({ "ParserError" })
 public class MainActivity extends Activity{
-
+	
+	private static final int[] ITEM_DRAWABLES = { R.drawable.string_button, R.drawable.url,
+		R.drawable.brightness_button_2, R.drawable.contact_image, R.drawable.phone_image, R.drawable.google_maps_button };
+	private static final int[] ITEM_DRAWABLES_1 = { R.drawable.facebook_icon, R.drawable.bluetooth_icon,
+		R.drawable.wifi_icon, R.drawable.beam_button, R.drawable.morpion_button };
+	
 	NfcAdapter adapter;
 	PendingIntent pendingIntent;
 	IntentFilter writeTagFilters[];
@@ -38,6 +48,91 @@ public class MainActivity extends Activity{
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+		
+		ArcMenu arcMenu = (ArcMenu) findViewById(R.id.arc_menu);
+
+		final int itemCount = ITEM_DRAWABLES_1.length;
+		for (int i = 0; i < itemCount; i++) {
+			ImageView item = new ImageView(this);
+			item.setImageResource(ITEM_DRAWABLES_1[i]);
+
+			final int position = i;
+			arcMenu.addItem(item, new OnClickListener() {
+
+				public void onClick(View v) {
+					Toast.makeText(MainActivity.this, "position:" + position, Toast.LENGTH_SHORT).show();
+					if(position==0)
+					{
+						Intent intent = new Intent(ctx, WriteFacebook.class);
+					    startActivity(intent);
+					}
+					if(position==1)
+					{
+						Intent intent = new Intent(ctx, WriteBluetooth.class);
+						startActivity(intent);
+					}
+					if(position==2)
+					{
+						Intent intent = new Intent(ctx, WriteWifi.class);
+						startActivity(intent);
+					}
+					if(position==3)
+					{
+						Intent intent = new Intent(ctx, Beam.class);
+						startActivity(intent);
+					}
+					if(position==4)
+					{
+						Intent intent = new Intent(ctx, MorpionActivity.class);
+						startActivity(intent);
+					}
+				}
+			});// Add a menu item
+		}
+
+		RayMenu rayMenu = (RayMenu) findViewById(R.id.ray_menu);
+		for (int i = 0; i < itemCount; i++) {
+			ImageView item = new ImageView(this);
+			item.setImageResource(ITEM_DRAWABLES[i]);
+
+			final int position = i;
+			rayMenu.addItem(item, new OnClickListener() {
+
+				public void onClick(View v) {
+					Toast.makeText(MainActivity.this, "position:" + position, Toast.LENGTH_SHORT).show();
+					if(position==0)
+					{
+						Intent intent = new Intent(ctx, WriteString.class);
+					    startActivity(intent);
+					}
+					if(position==1)
+					{
+						Intent intent = new Intent(ctx, WriteUri.class);
+						startActivity(intent);
+					}
+					if(position==2)
+					{
+						Intent intent = new Intent(ctx, WriteSetting.class);
+						startActivity(intent);
+					}
+					if(position==3)
+					{
+						Intent intent = new Intent(ctx, AddContact.class);
+						startActivity(intent);
+					}
+					if(position==4)
+					{
+						Intent intent = new Intent(ctx, WriteCall.class);
+						startActivity(intent);
+					}
+					if(position==5)
+					{
+						Intent intent = new Intent(ctx, WriteDestination.class);
+						startActivity(intent);
+					}
+				}
+			});// Add a menu item
+		}
 
 		ctx=this;
 				

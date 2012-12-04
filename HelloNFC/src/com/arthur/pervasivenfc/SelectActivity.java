@@ -138,6 +138,7 @@ public class SelectActivity extends Activity {
 		String str[]=contenu.split("/");
 		//toast("avant les if " + str[1]);
 		
+		//Write a String
 		if(str[1].equals("str"))
 		{
 			toast("Display string: " + str[2]);
@@ -145,6 +146,8 @@ public class SelectActivity extends Activity {
 			    intent.putExtra(EXTRA_TAG, str[2]);
 			    startActivity(intent);
 		}
+		
+		//Brightness
 		else if(str[1].equals("set"))
 		{
 			//toast("Changing brigthness setting to: " + str[2]);
@@ -153,6 +156,7 @@ public class SelectActivity extends Activity {
 			    startActivity(intent);
 		}
 		
+		//Add a contact
 		else if(str[1].equals("ctc"))
 		{
 			Intent intent = new Intent(this, ReadContact.class);
@@ -160,12 +164,37 @@ public class SelectActivity extends Activity {
 		    startActivity(intent);
 		}
 		
+		//Make a call
 		else if(str[1].equals("cal"))
 		{
 			Intent intent = new Intent(this, MakeCall.class);
 		    intent.putExtra(EXTRA_TAG, str[2]);
 		    startActivity(intent);
 		}
+		
+		//Activate/desactivate Bleutooth
+		else if(str[1].equals("blue"))
+		{
+			Intent intent = new Intent(this, EnableBluetooth.class);
+		    startActivity(intent);
+		}
+		
+		//Connect to Wi-Fi
+		else if(str[1].equals("w"))
+		{
+			Intent intent = new Intent(this, ConnectWifi.class);
+		    intent.putExtra(EXTRA_TAG, str[2]);
+		    startActivity(intent);
+		}
+		
+		else if(str[1].equals("fac"))
+		{
+			Intent intent = new Intent(this, OpenFacebook.class);
+		    intent.putExtra(EXTRA_TAG, str[2]);
+		    startActivity(intent);
+		}
+		
+		//Use Facebook
 		else if(str[1].equals("dst"))
 		{
 			Intent intent = new Intent(this, ReadDestination.class);

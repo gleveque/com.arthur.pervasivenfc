@@ -4,14 +4,15 @@ import com.arthur.pervasivenfc.R;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
+import android.bluetooth.BluetoothAdapter;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
@@ -21,8 +22,6 @@ import android.os.Parcelable;
 import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
 import android.support.v4.app.NotificationCompat;
-import android.telephony.PhoneStateListener;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.Window;
@@ -33,7 +32,7 @@ import android.widget.Toast;
 
 @SuppressWarnings("unused")
 @TargetApi(16) //Quiet compilator
-public class MakeCall extends Activity {
+public class EnableBluetooth extends Activity {
 
 	NfcAdapter adapter;
 	PendingIntent pendingIntent;
@@ -48,17 +47,14 @@ public class MakeCall extends Activity {
     //a window object, that will store a reference to the current window  
     private Window window; 
     final String EXTRA_TAG = "new_tag";
-    private String TAG ="EndCallListener";
+    private final static int REQUEST_ENABLE_BT = 1;
     
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
-        setContentView(R.layout.activity_change_setting);
-		
+        //setContentView(R.layout.activity_change_setting);
 		resolveIntent(this.getIntent());
-			
     }
 
     @Override
@@ -78,59 +74,37 @@ public class MakeCall extends Activity {
     
     private void resolveIntent(Intent intent) {
     	
-    	String action = intent.getAction();
-    	String contenu = null;
+    	 String action = intent.getAction();
+    	 String contenu = null;
 			 
-    	// Change the view
-		contenu = intent.getStringExtra(EXTRA_TAG);
-	    displayNotification(contenu);
-	    //changeTextView(contenu);
-	    makeACall(contenu);
-	    //moveTaskToBack(true);
+			//contenu = intent.getStringExtra(EXTRA_TAG);
+			// Change the Brightness
+	        enableBluetooth();
+	        moveTaskToBack(true);
+
+    	
 	        
     }
-    
-    void changeTextView(String contenu) {
-    	    	
-    	//Just display the content of the tag
-    	TextView currentRankText = (TextView)  this.findViewById(R.id.currentRankLabel);
-    	
-    	
-    	
-    	//We change the text of the view
-    	currentRankText.setText(contenu);
-    	
-    }
-    
-    void makeACall(String contenu) {
-    	
-    	
-    	String number = "tel:" + contenu.trim();
-        Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse(number)); 
-        startActivity(callIntent);
-    	
-    	EndCallListener callListener = new EndCallListener();
-    	TelephonyManager mTM = (TelephonyManager)this.getSystemService(Context.TELEPHONY_SERVICE);
-    	mTM.listen(callListener, PhoneStateListener.LISTEN_CALL_STATE);
-    }
-    
-    private class EndCallListener extends PhoneStateListener {
-        @Override
-        public void onCallStateChanged(int state, String incomingNumber) {
-            if(TelephonyManager.CALL_STATE_RINGING == state) {
-                Log.i(TAG, "RINGING, number: " + incomingNumber);
-            }
-            if(TelephonyManager.CALL_STATE_OFFHOOK == state) {
-                //wait for phone to go offhook (probably set a boolean flag) so you know your app initiated the call.
-                Log.i(TAG, "OFFHOOK");
-            }
-            if(TelephonyManager.CALL_STATE_IDLE == state) {
-                //when this state occurs, and your flag is set, restart your app
-                Log.i(TAG, "IDLE");
-            }
-        }
-    }
-    
+        
+	void enableBluetooth(){
+		BluetoothAdapter bt = BluetoothAdapter.getDefaultAdapter();
+	    if (bt == null){
+	        //Does not support Bluetooth
+	    	displayNotification("Your device does not support Bluetooth");
+	    }else{
+	        //Magic starts. Let's check if it's enabled
+	        if (!bt.isEnabled()){
+	            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+	            startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+	            displayNotification("Bluetooth Enable");
+	        }   
+	        else{ 
+		        bt.disable();
+		        displayNotification("Bluetooth Disable");
+		    } 
+	    }
+	}
+	
 	void displayNotification(String contenu) {
          //Display a notification when the job is done
 
@@ -138,7 +112,7 @@ public class MakeCall extends Activity {
         	        new NotificationCompat.Builder(this)
         	        .setSmallIcon(R.drawable.ic_launcher)
         	        .setContentTitle("Pervasive project")
-        	        .setContentText("Content: " + contenu );
+        	        .setContentText(contenu );
         	// Creates an explicit intent for an Activity in your app
          Intent resultIntent = new Intent(this, MainActivity.class);
 

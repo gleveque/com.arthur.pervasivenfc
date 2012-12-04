@@ -1,5 +1,7 @@
 package com.arthur.pervasivenfc;
 
+import java.util.List;
+
 import com.arthur.pervasivenfc.R;
 
 import android.annotation.TargetApi;
@@ -11,6 +13,10 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
@@ -21,8 +27,6 @@ import android.os.Parcelable;
 import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
 import android.support.v4.app.NotificationCompat;
-import android.telephony.PhoneStateListener;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.Window;
@@ -33,7 +37,7 @@ import android.widget.Toast;
 
 @SuppressWarnings("unused")
 @TargetApi(16) //Quiet compilator
-public class MakeCall extends Activity {
+public class OpenFacebook extends Activity {
 
 	NfcAdapter adapter;
 	PendingIntent pendingIntent;
@@ -48,14 +52,13 @@ public class MakeCall extends Activity {
     //a window object, that will store a reference to the current window  
     private Window window; 
     final String EXTRA_TAG = "new_tag";
-    private String TAG ="EndCallListener";
     
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        setContentView(R.layout.activity_change_setting);
+        setContentView(R.layout.activity_open_facebook);
 		
 		resolveIntent(this.getIntent());
 			
@@ -84,49 +87,73 @@ public class MakeCall extends Activity {
     	// Change the view
 		contenu = intent.getStringExtra(EXTRA_TAG);
 	    displayNotification(contenu);
-	    //changeTextView(contenu);
-	    makeACall(contenu);
+	    Intent facebookIntent = getOpenFacebookIntent(this);
+    	startActivity(facebookIntent);
 	    //moveTaskToBack(true);
 	        
     }
     
-    void changeTextView(String contenu) {
-    	    	
-    	//Just display the content of the tag
-    	TextView currentRankText = (TextView)  this.findViewById(R.id.currentRankLabel);
-    	
-    	
-    	
-    	//We change the text of the view
-    	currentRankText.setText(contenu);
-    	
+    public static Intent getOpenFacebookIntent(Context context) {
+
+        try {
+            context.getPackageManager()
+                    .getPackageInfo("com.facebook.katana", 0); //Checks if FB is even installed.
+            return new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("fb://pages/310622139051065/")); //Trys to make intent with FB's URI
+        } catch (Exception e) {
+            return new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("https://www.facebook.com/events/310622139051065/")); //catches and opens a url to the desired page
+        }
+        
+        /*
+         * fb://root
+fb://feed
+fb://feed/{userID}
+fb://profile
+fb://profile/{userID}
+fb://page/{id}
+fb://group/{id}
+fb://place/fw?pid={id}
+fb://profile/{#user_id}/wall
+fb://profile/{#user_id}/info
+fb://profile/{#user_id}/photos
+fb://profile/{#user_id}/mutualfriends
+fb://profile/{#user_id}/friends
+fb://profile/{#user_id}/fans
+fb://search
+fb://friends
+fb://pages
+fb://messaging
+fb://messaging/{#user_id}
+fb://online
+fb://requests
+fb://events
+fb://places
+fb://birthdays
+fb://notes
+fb://places
+fb://groups
+fb://notifications
+fb://albums
+fb://album/{%s}?owner={#%s}
+fb://video/?href={href}
+fb://post/{postid}?owner={uid}¹*/
     }
     
-    void makeACall(String contenu) {
-    	
-    	
-    	String number = "tel:" + contenu.trim();
-        Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse(number)); 
-        startActivity(callIntent);
-    	
-    	EndCallListener callListener = new EndCallListener();
-    	TelephonyManager mTM = (TelephonyManager)this.getSystemService(Context.TELEPHONY_SERVICE);
-    	mTM.listen(callListener, PhoneStateListener.LISTEN_CALL_STATE);
-    }
-    
-    private class EndCallListener extends PhoneStateListener {
-        @Override
-        public void onCallStateChanged(int state, String incomingNumber) {
-            if(TelephonyManager.CALL_STATE_RINGING == state) {
-                Log.i(TAG, "RINGING, number: " + incomingNumber);
-            }
-            if(TelephonyManager.CALL_STATE_OFFHOOK == state) {
-                //wait for phone to go offhook (probably set a boolean flag) so you know your app initiated the call.
-                Log.i(TAG, "OFFHOOK");
-            }
-            if(TelephonyManager.CALL_STATE_IDLE == state) {
-                //when this state occurs, and your flag is set, restart your app
-                Log.i(TAG, "IDLE");
+    //This function return all the packages installed on the device
+    public void listAllActivities() throws NameNotFoundException
+    {
+        List<PackageInfo> packages = getPackageManager().getInstalledPackages(0);
+        for(PackageInfo pack : packages)
+        {
+            ActivityInfo[] activityInfo = getPackageManager().getPackageInfo(pack.packageName, PackageManager.GET_ACTIVITIES).activities;
+            Log.i("Pranay", pack.packageName + " has total " + ((activityInfo==null)?0:activityInfo.length) + " activities");
+            if(activityInfo!=null)
+            {
+                for(int i=0; i<activityInfo.length; i++)
+                {
+                    Log.i("PC", pack.packageName + " ::: " + activityInfo[i].name);
+                }
             }
         }
     }

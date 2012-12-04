@@ -1,5 +1,7 @@
 package com.arthur.pervasivenfc;
 
+import java.util.ArrayList;
+
 import com.arthur.pervasivenfc.R;
 
 import android.annotation.TargetApi;
@@ -7,22 +9,23 @@ import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
+import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.Uri;
+import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiManager;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.provider.ContactsContract;
 import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
 import android.support.v4.app.NotificationCompat;
-import android.telephony.PhoneStateListener;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.Window;
@@ -33,7 +36,7 @@ import android.widget.Toast;
 
 @SuppressWarnings("unused")
 @TargetApi(16) //Quiet compilator
-public class MakeCall extends Activity {
+public class ConnectWifi extends Activity {
 
 	NfcAdapter adapter;
 	PendingIntent pendingIntent;
@@ -48,14 +51,13 @@ public class MakeCall extends Activity {
     //a window object, that will store a reference to the current window  
     private Window window; 
     final String EXTRA_TAG = "new_tag";
-    private String TAG ="EndCallListener";
     
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        setContentView(R.layout.activity_change_setting);
+        setContentView(R.layout.activity_connect_wifi);
 		
 		resolveIntent(this.getIntent());
 			
@@ -84,10 +86,34 @@ public class MakeCall extends Activity {
     	// Change the view
 		contenu = intent.getStringExtra(EXTRA_TAG);
 	    displayNotification(contenu);
-	    //changeTextView(contenu);
-	    makeACall(contenu);
+	    changeTextView(contenu);
+	    connectToWifi(contenu);
 	    //moveTaskToBack(true);
 	        
+    }
+    
+    void connectToWifi(String contenu) {
+    	
+    	String connect[] = contenu.split(":");
+    	String ssid = connect[0];
+    	String password = connect[1];
+    	
+    	WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        // setup a wifi configuration
+        WifiConfiguration wc = new WifiConfiguration();
+        wc.SSID = ssid;
+        wc.preSharedKey = password;
+        wc.status = WifiConfiguration.Status.ENABLED;
+        wc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
+        wc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
+        wc.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
+        wc.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
+        wc.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
+        wc.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
+        // connect to and enable the connection
+        int netId = wifiManager.addNetwork(wc);
+        wifiManager.enableNetwork(netId, true);
+        wifiManager.setWifiEnabled(true);
     }
     
     void changeTextView(String contenu) {
@@ -95,40 +121,14 @@ public class MakeCall extends Activity {
     	//Just display the content of the tag
     	TextView currentRankText = (TextView)  this.findViewById(R.id.currentRankLabel);
     	
+    	String connect[] = contenu.split(":");
+    	String ssid = connect[0];
+    	String password = connect[1];
     	
     	
     	//We change the text of the view
-    	currentRankText.setText(contenu);
+    	currentRankText.setText("Ssid: "+ ssid + ", Password: " + password);
     	
-    }
-    
-    void makeACall(String contenu) {
-    	
-    	
-    	String number = "tel:" + contenu.trim();
-        Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse(number)); 
-        startActivity(callIntent);
-    	
-    	EndCallListener callListener = new EndCallListener();
-    	TelephonyManager mTM = (TelephonyManager)this.getSystemService(Context.TELEPHONY_SERVICE);
-    	mTM.listen(callListener, PhoneStateListener.LISTEN_CALL_STATE);
-    }
-    
-    private class EndCallListener extends PhoneStateListener {
-        @Override
-        public void onCallStateChanged(int state, String incomingNumber) {
-            if(TelephonyManager.CALL_STATE_RINGING == state) {
-                Log.i(TAG, "RINGING, number: " + incomingNumber);
-            }
-            if(TelephonyManager.CALL_STATE_OFFHOOK == state) {
-                //wait for phone to go offhook (probably set a boolean flag) so you know your app initiated the call.
-                Log.i(TAG, "OFFHOOK");
-            }
-            if(TelephonyManager.CALL_STATE_IDLE == state) {
-                //when this state occurs, and your flag is set, restart your app
-                Log.i(TAG, "IDLE");
-            }
-        }
     }
     
 	void displayNotification(String contenu) {
@@ -138,7 +138,7 @@ public class MakeCall extends Activity {
         	        new NotificationCompat.Builder(this)
         	        .setSmallIcon(R.drawable.ic_launcher)
         	        .setContentTitle("Pervasive project")
-        	        .setContentText("Content: " + contenu );
+        	        .setContentText("New contact added! " );
         	// Creates an explicit intent for an Activity in your app
          Intent resultIntent = new Intent(this, MainActivity.class);
 
@@ -191,6 +191,6 @@ public class MakeCall extends Activity {
 	}
     
 	private void toast(String text) {
-		Toast.makeText(ctx, ctx.getString(R.string.hello_world) , Toast.LENGTH_LONG ).show();
+		Toast.makeText(ctx, ctx.getString(R.string.new_contact) , Toast.LENGTH_LONG ).show();
     }
 }

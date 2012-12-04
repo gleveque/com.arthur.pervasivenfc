@@ -1,5 +1,8 @@
 package com.arthur.pervasivenfc;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import com.arthur.pervasivenfc.R;
 
 import android.annotation.TargetApi;
@@ -17,7 +20,9 @@ import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcelable;
+import android.os.RemoteException;
 import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
 import android.support.v4.app.NotificationCompat;
@@ -51,7 +56,7 @@ public class ChangeSetting extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_change_setting);
+        setContentView(R.layout.activity_change_setting);
 		resolveIntent(this.getIntent());
     }
 
@@ -79,7 +84,7 @@ public class ChangeSetting extends Activity {
 			// Change the Brightness
 	        changeBrightness(contenu);
 	        displayNotification(contenu);
-	        moveTaskToBack(true);
+	        //moveTaskToBack(true);
 
     	
 	        
@@ -87,47 +92,45 @@ public class ChangeSetting extends Activity {
         
 	void changeBrightness(String contenu) {
     	    	 
-    	 //Here we will try to change the setting of the brightness
+		brightness = Integer.parseInt(contenu);
+		
+		Settings.System.putInt(this.getContentResolver(), 
+				               Settings.System.SCREEN_BRIGHTNESS_MODE,
+				               Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
+		
+		Settings.System.putInt(this.getContentResolver(),
+				               Settings.System.SCREEN_BRIGHTNESS,
+				               brightness);  
     	 
-    	 //First we have to parse the records
-    	 
-    	 //And finaly give the parameters to the application
-    	 
-    	//get the content resolver  
-         cResolver = getContentResolver();  
-         
-         //get the current window  
-         window = getWindow();
-         
-         try   
-         {  
-             //get the current system brightness  
-             brightness = Settings.System.getInt(cResolver, Settings.System.SCREEN_BRIGHTNESS);  
-         }   
-         catch (SettingNotFoundException e)   
-         {  
-             //throw an error case it couldn't be retrieved  
-             Log.e("Error", "Cannot access system brightness");  
-             e.printStackTrace();  
-         }  
-         
-         brightness = Integer.parseInt(contenu);
-    	 
-         //set the system brightness using the brightness variable value  
-         Settings.System.putInt(cResolver, Settings.System.SCREEN_BRIGHTNESS, brightness);  
-           
-         //preview brightness changes at this window  
-         //get the current window attributes  
-         LayoutParams layoutpars = window.getAttributes();  
-         //set the brightness of this window  
-         layoutpars.screenBrightness =  brightness / (float)255;
-         //apply attribute changes to this window  
-         window.setAttributes(layoutpars);
-         
-         /*AlertDialog alertDialog = new AlertDialog.Builder(ChangeSetting.this).create();
-         alertDialog.setTitle("Changing brightness setting");
-         alertDialog.setMessage("Set to " + contenu);
-         alertDialog.show();*/
+		LayoutParams params = this.getWindow().getAttributes();
+		
+		if (brightness == 255) {
+			params.screenBrightness = 1.0f;
+			
+		}
+		else {
+			params.screenBrightness = 0.2f;
+		}
+		
+		this.getWindow().setAttributes(params);
+		
+		//Just display the content of the tag
+    	//TextView currentRankText = (TextView)  this.findViewById(R.id.currentRankLabel);
+
+    	//We change the text of the view
+    	//currentRankText.setText("Setting brightness to " + contenu);
+    	
+    	Handler handler = new Handler(); 
+        handler.postDelayed(new Runnable() { 
+             public void run() { 
+                  
+             } 
+        }, 2000);
+    	
+    	Intent i = new Intent(Intent.ACTION_MAIN);
+    	i.addCategory(Intent.CATEGORY_HOME);
+    	startActivity(i);
+		
 	}
 	
 	void displayNotification(String contenu) {

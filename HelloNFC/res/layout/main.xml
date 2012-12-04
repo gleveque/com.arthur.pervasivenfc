@@ -1,84 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content">
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <Button
-        android:id="@+id/button1"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:drawableLeft="@drawable/string_button"
-        android:onClick="writeString"
-        android:background="@drawable/button_custom"
-        android:text="@string/write_string" />
+    <com.arthur.pervasivenfc.RayMenu
+        android:id="@+id/ray_menu"
+        android:layout_width="fill_parent"
+        android:layout_height="60dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp" />
 
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:drawableLeft="@drawable/url"
-        android:onClick="writeUri"
-        android:background="@drawable/button_custom_2"
-        android:text="@string/write_url" />
-
-    <Button
-        android:id="@+id/button3"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:drawableLeft="@drawable/brightness_button_2"
-        android:onClick="writeBrightness"
-        android:background="@drawable/button_custom3"
-        android:text="@string/write_brightness" />
-
-    <Button
-        android:id="@+id/button4"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:drawableLeft="@drawable/contact_image"
-        android:onClick="writeContact"
-        android:background="@drawable/button_custom4"
-        android:text="@string/add_contact" />
-
-    <Button
-        android:id="@+id/button5"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:drawableLeft="@drawable/phone_image"
-        android:onClick="writeCall"
-        android:background="@drawable/button_custom5"
-        android:text="@string/make_call" />
-    
-    <Button
-        android:id="@+id/button6"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:drawableLeft="@drawable/google_maps_button"
-        android:onClick="writeDestination"
-        android:background="@drawable/button_custom6"
-        android:text="@string/destination_2" />
-    
-    <Button 
-        android:id="@+id/button7"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:drawableLeft="@drawable/beam_button"
-        android:onClick="beam"
-        android:background="@drawable/button_custom4"
-        android:text="@string/Beam" />
-    
-    <Button 
-        android:id="@+id/button8"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:drawableLeft="@drawable/morpion_button"
-        android:onClick="morpion"
-        android:background="@drawable/button_custom2"
-        android:text="@string/Morpion" />
+    <com.arthur.pervasivenfc.ArcMenu
+        android:id="@+id/arc_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 </LinearLayout>
-</ScrollView>

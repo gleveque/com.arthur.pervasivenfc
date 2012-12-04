@@ -52,6 +52,15 @@
     <string name="destination_2">Choose a destination</string>
     <string name="destination">Write the destination on the NFC tag</string>
     <string name="destination_3">test</string>
+    <string name="enable_bluetooth">Put the tag close to the phone to write on it</string>
+    <string name="title_activity_write_bluetooth">Enable/Disable Bluetooth</string>
+    <string name="title_activity_enable_bluetooth">Enable Bluetooth</string>
+    <string name="title_activity_write_wifi">Set Wifi Configuration</string>
+    <string name="ssid">SSID</string>
+    <string name="title_activity_write_facebook">WriteFacebook</string>
+    <string name="title_activity_connect_wifi">ConnectWifi</string>
+    <string name="title_activity_open_facebook">OpenFacebook</string>
+    <string name="password">Password</string>
     <string name="city">City selected</string>
     <string-array name="destination">
         <item>Londres</item>

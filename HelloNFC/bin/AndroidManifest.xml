@@ -139,6 +139,27 @@
                 android:value="com.arthur.pervasivenfc.MainActivity" />
         </activity>
         <activity
+            android:name=".WriteBluetooth"
+            android:label="@string/title_activity_write_bluetooth" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.arthur.pervasivenfc.MainActivity" />
+        </activity>
+        <activity
+            android:name=".WriteWifi"
+            android:label="@string/title_activity_write_wifi" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.arthur.pervasivenfc.MainActivity" />
+        </activity>
+        <activity
+            android:name=".WriteFacebook"
+            android:label="@string/title_activity_write_facebook" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.arthur.pervasivenfc.MainActivity" />
+        </activity>
+        <activity
             android:name=".WriteCall"
             android:label="@string/title_activity_write_call" >
             <meta-data
@@ -151,6 +172,46 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.arthur.pervasivenfc.MainActivity" />
+        </activity>
+        <activity
+            android:name=".EnableBluetooth"
+            android:label="@string/title_activity_enable_bluetooth"
+            android:launchMode="singleInstance"
+            android:theme="@android:style/Theme.NoDisplay" >
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+         <activity
+            android:name=".ConnectWifi"
+            android:label="@string/title_activity_connect_wifi"
+            android:launchMode="singleInstance" >
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".OpenFacebook"
+            android:label="@string/title_activity_open_facebook"
+            android:launchMode="singleInstance" >
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".WriteDestination"
